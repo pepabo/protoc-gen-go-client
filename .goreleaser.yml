@@ -28,6 +28,7 @@ archives:
       - goos: darwin
         format: zip
     files:
+      - LICENSE
       - CREDITS
       - README.md
       - CHANGELOG.md
