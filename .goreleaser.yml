@@ -1,0 +1,60 @@
+before:
+  hooks:
+    - go mod download
+    - go mod tidy
+builds:
+  -
+    id: protoc-gen-go-client-darwin
+    ldflags:
+      - -s -w -X github.com/pepabo/protoc-gen-go-client.version={{.Version}} -X github.com/pepabo/protoc-gen-go-client.commit={{.FullCommit}} -X github.com/pepabo/protoc-gen-go-client.date={{.Date}} -X github.com/pepabo/protoc-gen-go-client/version.Version={{.Version}}
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+  -
+    id: protoc-gen-go-client-linux
+    ldflags:
+      - -s -w -X github.com/pepabo/protoc-gen-go-client.version={{.Version}} -X github.com/pepabo/protoc-gen-go-client.commit={{.FullCommit}} -X github.com/pepabo/protoc-gen-go-client.date={{.Date}} -X github.com/pepabo/protoc-gen-go-client/version.Version={{.Version}}
+    goos:
+      - linux
+    goarch:
+      - amd64
+archives:
+  -
+    id: protoc-gen-go-client-archive
+    name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    format_overrides:
+      - goos: darwin
+        format: zip
+    files:
+      - CREDITS
+      - README.md
+      - CHANGELOG.md
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Version }}-next"
+changelog:
+  skip: true
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+nfpms:
+  -
+    id: protoc-gen-go-client-nfpms
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
+    builds:
+      - protoc-gen-go-client-linux
+    homepage: https://github.com/pepabo/protoc-gen-go-client
+    maintainer: 'GMO Pepabo, inc.'
+    description: protoc-gen-go-client is a protoc plugin that generates a client that compiles gRPC Clients for multiple services
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    epoch: 1
