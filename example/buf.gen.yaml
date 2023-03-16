@@ -1,0 +1,15 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/pepabo/protoc-gen-go-client/example
+plugins:
+  - plugin: go
+    out: gen/go
+    opt: paths=source_relative
+  - plugin: go-grpc
+    out: gen/go
+    opt: paths=source_relative
+  - plugin: go-client
+    out: gen/go
+    opt: paths=source_relative,same_package

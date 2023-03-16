@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package example;
+
+service ProjectService {
+  rpc ListProjects(DummyProjectRequest) returns (stream DummyProjectResponse);
+  rpc CreateProject(DummyProjectRequest) returns (DummyProjectResponse);
+}
+
+message DummyProjectRequest {}
+
+message DummyProjectResponse {}
