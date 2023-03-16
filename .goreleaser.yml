@@ -52,7 +52,7 @@ nfpms:
       - protoc-gen-go-client-linux
     homepage: https://github.com/pepabo/protoc-gen-go-client
     maintainer: 'GMO Pepabo, inc.'
-    description: protoc-gen-go-client is a protoc plugin that generates a client that compiles gRPC Clients for multiple services
+    description: protoc-gen-go-client is a protoc plugin that bundles a client that compiles gRPC Clients for multiple services
     license: MIT
     formats:
       - deb
