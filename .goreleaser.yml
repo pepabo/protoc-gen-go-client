@@ -32,6 +32,7 @@ archives:
       - CREDITS
       - README.md
       - CHANGELOG.md
+    rlcp: true
 checksum:
   name_template: 'checksums.txt'
 snapshot:
