@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: example/project.proto
+// source: myapp/project.proto
 
-package example
+package myapp
 
 import (
 	context "context"
@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ProjectService_ListProjects_FullMethodName  = "/example.ProjectService/ListProjects"
-	ProjectService_CreateProject_FullMethodName = "/example.ProjectService/CreateProject"
+	ProjectService_ListProjects_FullMethodName  = "/myapp.ProjectService/ListProjects"
+	ProjectService_CreateProject_FullMethodName = "/myapp.ProjectService/CreateProject"
 )
 
 // ProjectServiceClient is the client API for ProjectService service.
@@ -155,7 +155,7 @@ func _ProjectService_CreateProject_Handler(srv interface{}, ctx context.Context,
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ProjectService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.ProjectService",
+	ServiceName: "myapp.ProjectService",
 	HandlerType: (*ProjectServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -170,5 +170,5 @@ var ProjectService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "example/project.proto",
+	Metadata: "myapp/project.proto",
 }

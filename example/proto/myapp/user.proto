@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package example;
+package myapp;
 
 service UserService {
   rpc ListUsers(DummyRequest) returns (stream DummyResponse);

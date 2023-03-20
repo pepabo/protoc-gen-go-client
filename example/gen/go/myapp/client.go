@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-client v0.1.1
 
-package example
+package myapp
 
 import (
 	"google.golang.org/grpc"
