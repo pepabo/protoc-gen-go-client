@@ -2,4 +2,4 @@ package version
 
 const Name string = "protoc-gen-go-client"
 
-var Version = "0.1.0"
+var Version = "0.1.1"
