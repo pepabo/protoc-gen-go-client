@@ -62,8 +62,25 @@ func (gen *Generator) Generate() error {
 	g.P(`"google.golang.org/grpc"`)
 	g.P(`)`)
 
-	// type Client struct
-	g.P(`type Client struct {`)
+	// type ClientInterface interface
+	g.P(`type Client interface {`)
+	for _, pf := range gen.genp.Files {
+		if !pf.Generate {
+			continue
+		}
+		for _, s := range pf.Services {
+			if gen.samePackage {
+				g.P(fmt.Sprintf("%s() %sClient", s.Desc.FullName().Name(), s.Desc.FullName().Name()))
+			} else {
+				g.P(fmt.Sprintf("%s() %s.%sClient", s.Desc.FullName().Name(), tmppf.GoPackageName, s.Desc.FullName().Name()))
+			}
+		}
+	}
+	g.P(`}`)
+	g.P("")
+
+	// type client struct
+	g.P(`type client struct {`)
 	for _, pf := range gen.genp.Files {
 		if !pf.Generate {
 			continue
@@ -77,10 +94,11 @@ func (gen *Generator) Generate() error {
 		}
 	}
 	g.P(`}`)
+	g.P("")
 
 	// func New(cc grpc.ClientConnInterface) *Client
-	g.P(`func New(cc grpc.ClientConnInterface) *Client {`)
-	g.P(`return &Client{`)
+	g.P(`func New(cc grpc.ClientConnInterface) Client {`)
+	g.P(`return &client{`)
 	for _, pf := range gen.genp.Files {
 		if !pf.Generate {
 			continue
@@ -95,6 +113,7 @@ func (gen *Generator) Generate() error {
 	}
 	g.P(`}`)
 	g.P(`}`)
+	g.P("")
 
 	// func (c *Client) *
 	for _, pf := range gen.genp.Files {
@@ -103,16 +122,15 @@ func (gen *Generator) Generate() error {
 		}
 		for _, s := range pf.Services {
 			if gen.samePackage {
-				g.P(fmt.Sprintf("func (c *Client) %s() %sClient {", s.Desc.FullName().Name(), s.Desc.FullName().Name()))
+				g.P(fmt.Sprintf("func (c *client) %s() %sClient {", s.Desc.FullName().Name(), s.Desc.FullName().Name()))
 			} else {
-				g.P(fmt.Sprintf("func (c *Client) %s() %s.%sClient {", s.Desc.FullName().Name(), tmppf.GoPackageName, s.Desc.FullName().Name()))
+				g.P(fmt.Sprintf("func (c *client) %s() %s.%sClient {", s.Desc.FullName().Name(), tmppf.GoPackageName, s.Desc.FullName().Name()))
 			}
 			g.P(fmt.Sprintf("return c.%s", toLowerCamel(string(s.Desc.FullName().Name()))))
 			g.P("}")
+			g.P("")
 		}
 	}
-
-	g.P("")
 	return nil
 }
 
