@@ -29,6 +29,9 @@ depsdev:
 	go install github.com/Songmu/gocredits/cmd/gocredits@latest
 	go install github.com/securego/gosec/v2/cmd/gosec@latest
 
+buildexample: build
+	cd example/ && env PATH="${PWD}:${PATH}" buf generate
+
 prerelease:
 	git pull origin main --tag
 	go mod tidy

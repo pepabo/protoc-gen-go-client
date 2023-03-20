@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	"github.com/pepabo/protoc-gen-go-client/version"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -61,6 +62,7 @@ func (gen *Generator) Generate() error {
 	g.P(`"google.golang.org/grpc"`)
 	g.P(`)`)
 
+	// type Client struct
 	g.P(`type Client struct {`)
 	for _, pf := range gen.genp.Files {
 		if !pf.Generate {
@@ -68,14 +70,15 @@ func (gen *Generator) Generate() error {
 		}
 		for _, s := range pf.Services {
 			if gen.samePackage {
-				g.P(fmt.Sprintf("%s %sClient", s.Desc.FullName().Name(), s.Desc.FullName().Name()))
+				g.P(fmt.Sprintf("%s %sClient", toLowerCamel(string(s.Desc.FullName().Name())), s.Desc.FullName().Name()))
 			} else {
-				g.P(fmt.Sprintf("%s %s.%sClient", s.Desc.FullName().Name(), tmppf.GoPackageName, s.Desc.FullName().Name()))
+				g.P(fmt.Sprintf("%s %s.%sClient", toLowerCamel(string(s.Desc.FullName().Name())), tmppf.GoPackageName, s.Desc.FullName().Name()))
 			}
 		}
 	}
 	g.P(`}`)
 
+	// func New(cc grpc.ClientConnInterface) *Client
 	g.P(`func New(cc grpc.ClientConnInterface) *Client {`)
 	g.P(`return &Client{`)
 	for _, pf := range gen.genp.Files {
@@ -84,14 +87,31 @@ func (gen *Generator) Generate() error {
 		}
 		for _, s := range pf.Services {
 			if gen.samePackage {
-				g.P(fmt.Sprintf("%s: New%sClient(cc),", s.Desc.FullName().Name(), s.Desc.FullName().Name()))
+				g.P(fmt.Sprintf("%s: New%sClient(cc),", toLowerCamel(string(s.Desc.FullName().Name())), s.Desc.FullName().Name()))
 			} else {
-				g.P(fmt.Sprintf("%s: %s.New%sClient(cc),", s.Desc.FullName().Name(), tmppf.GoPackageName, s.Desc.FullName().Name()))
+				g.P(fmt.Sprintf("%s: %s.New%sClient(cc),", toLowerCamel(string(s.Desc.FullName().Name())), tmppf.GoPackageName, s.Desc.FullName().Name()))
 			}
 		}
 	}
 	g.P(`}`)
 	g.P(`}`)
+
+	// func (c *Client) *
+	for _, pf := range gen.genp.Files {
+		if !pf.Generate {
+			continue
+		}
+		for _, s := range pf.Services {
+			if gen.samePackage {
+				g.P(fmt.Sprintf("func (c *Client) %s() %sClient {", s.Desc.FullName().Name(), s.Desc.FullName().Name()))
+			} else {
+				g.P(fmt.Sprintf("func (c *Client) %s() %s.%sClient {", s.Desc.FullName().Name(), tmppf.GoPackageName, s.Desc.FullName().Name()))
+			}
+			g.P(fmt.Sprintf("return c.%s", toLowerCamel(string(s.Desc.FullName().Name()))))
+			g.P("}")
+		}
+	}
+
 	g.P("")
 	return nil
 }
@@ -111,4 +131,12 @@ func (gen *Generator) parseOpts() error {
 		return errors.New("package name cannot be specified if it is the same package as the Go package")
 	}
 	return nil
+}
+
+func toLowerCamel(s string) string {
+	runes := []rune(s)
+	if len(runes) > 0 {
+		runes[0] = unicode.ToLower(runes[0])
+	}
+	return string(runes)
 }
