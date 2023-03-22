@@ -4,8 +4,7 @@ go 1.20
 
 require (
 	github.com/k1LoW/grpcstub v0.8.1
-	google.golang.org/grpc v1.53.0
-	google.golang.org/grpc/examples v0.0.0-20230321232853-a02aae6168aa
+	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.30.0
 )
 
@@ -20,5 +19,3 @@ require (
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/genproto v0.0.0-20230303212802-e74f57abe488 // indirect
 )
-
-replace github.com/k1LoW/grpcstub => ../../../k1LoW/grpcstub
