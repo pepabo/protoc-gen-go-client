@@ -3,10 +3,20 @@ syntax = "proto3";
 package myapp;
 
 service UserService {
-  rpc ListUsers(DummyRequest) returns (stream DummyResponse);
-  rpc CreateUser(DummyRequest) returns (DummyResponse);
+  rpc ListUsers(ListUsersRequest) returns (stream UserResponse);
+  rpc CreateUser(CreateUserRequest) returns (UserResponse);
 }
 
-message DummyRequest {}
+message ListUsersRequest {
+  int64 page = 1;
+}
 
-message DummyResponse {}
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+}
+
+message UserResponse {
+  string name = 1;
+  string email = 2;
+}

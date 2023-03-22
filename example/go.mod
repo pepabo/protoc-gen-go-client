@@ -20,3 +20,5 @@ require (
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/genproto v0.0.0-20230303212802-e74f57abe488 // indirect
 )
+
+replace github.com/k1LoW/grpcstub => ../../../k1LoW/grpcstub

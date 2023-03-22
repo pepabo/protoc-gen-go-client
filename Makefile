@@ -13,12 +13,12 @@ BUILD_LDFLAGS = -X $(PKG).commit=$(COMMIT) -X $(PKG).date=$(DATE)
 
 default: test
 
-ci: test testclient
+ci: test testexample
 
 test:
 	go test ./... -coverprofile=coverage.out -covermode=count
 
-testclient:
+testexample:
 	cd example/ && go test ./...
 
 lint:

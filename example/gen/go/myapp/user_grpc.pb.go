@@ -27,8 +27,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	ListUsers(ctx context.Context, in *DummyRequest, opts ...grpc.CallOption) (UserService_ListUsersClient, error)
-	CreateUser(ctx context.Context, in *DummyRequest, opts ...grpc.CallOption) (*DummyResponse, error)
+	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (UserService_ListUsersClient, error)
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
 type userServiceClient struct {
@@ -39,7 +39,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) ListUsers(ctx context.Context, in *DummyRequest, opts ...grpc.CallOption) (UserService_ListUsersClient, error) {
+func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (UserService_ListUsersClient, error) {
 	stream, err := c.cc.NewStream(ctx, &UserService_ServiceDesc.Streams[0], UserService_ListUsers_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (c *userServiceClient) ListUsers(ctx context.Context, in *DummyRequest, opt
 }
 
 type UserService_ListUsersClient interface {
-	Recv() (*DummyResponse, error)
+	Recv() (*UserResponse, error)
 	grpc.ClientStream
 }
 
@@ -63,16 +63,16 @@ type userServiceListUsersClient struct {
 	grpc.ClientStream
 }
 
-func (x *userServiceListUsersClient) Recv() (*DummyResponse, error) {
-	m := new(DummyResponse)
+func (x *userServiceListUsersClient) Recv() (*UserResponse, error) {
+	m := new(UserResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *userServiceClient) CreateUser(ctx context.Context, in *DummyRequest, opts ...grpc.CallOption) (*DummyResponse, error) {
-	out := new(DummyResponse)
+func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
 	err := c.cc.Invoke(ctx, UserService_CreateUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *DummyRequest, op
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	ListUsers(*DummyRequest, UserService_ListUsersServer) error
-	CreateUser(context.Context, *DummyRequest) (*DummyResponse, error)
+	ListUsers(*ListUsersRequest, UserService_ListUsersServer) error
+	CreateUser(context.Context, *CreateUserRequest) (*UserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -93,10 +93,10 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) ListUsers(*DummyRequest, UserService_ListUsersServer) error {
+func (UnimplementedUserServiceServer) ListUsers(*ListUsersRequest, UserService_ListUsersServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
 }
-func (UnimplementedUserServiceServer) CreateUser(context.Context, *DummyRequest) (*DummyResponse, error) {
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -113,7 +113,7 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 }
 
 func _UserService_ListUsers_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(DummyRequest)
+	m := new(ListUsersRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func _UserService_ListUsers_Handler(srv interface{}, stream grpc.ServerStream) e
 }
 
 type UserService_ListUsersServer interface {
-	Send(*DummyResponse) error
+	Send(*UserResponse) error
 	grpc.ServerStream
 }
 
@@ -129,12 +129,12 @@ type userServiceListUsersServer struct {
 	grpc.ServerStream
 }
 
-func (x *userServiceListUsersServer) Send(m *DummyResponse) error {
+func (x *userServiceListUsersServer) Send(m *UserResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
 func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DummyRequest)
+	in := new(CreateUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: UserService_CreateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).CreateUser(ctx, req.(*DummyRequest))
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

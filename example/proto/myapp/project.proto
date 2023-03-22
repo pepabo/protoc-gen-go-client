@@ -3,10 +3,18 @@ syntax = "proto3";
 package myapp;
 
 service ProjectService {
-  rpc ListProjects(DummyProjectRequest) returns (stream DummyProjectResponse);
-  rpc CreateProject(DummyProjectRequest) returns (DummyProjectResponse);
+  rpc ListProjects(ListProjectsRequest) returns (stream ProjectResponse);
+  rpc CreateProject(CreateProjectRequest) returns (ProjectResponse);
 }
 
-message DummyProjectRequest {}
+message ListProjectsRequest {
+  int64 page = 1;
+}
 
-message DummyProjectResponse {}
+message CreateProjectRequest {
+  string name = 1;
+}
+
+message ProjectResponse {
+  string name = 1;
+}

@@ -27,8 +27,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProjectServiceClient interface {
-	ListProjects(ctx context.Context, in *DummyProjectRequest, opts ...grpc.CallOption) (ProjectService_ListProjectsClient, error)
-	CreateProject(ctx context.Context, in *DummyProjectRequest, opts ...grpc.CallOption) (*DummyProjectResponse, error)
+	ListProjects(ctx context.Context, in *ListProjectsRequest, opts ...grpc.CallOption) (ProjectService_ListProjectsClient, error)
+	CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...grpc.CallOption) (*ProjectResponse, error)
 }
 
 type projectServiceClient struct {
@@ -39,7 +39,7 @@ func NewProjectServiceClient(cc grpc.ClientConnInterface) ProjectServiceClient {
 	return &projectServiceClient{cc}
 }
 
-func (c *projectServiceClient) ListProjects(ctx context.Context, in *DummyProjectRequest, opts ...grpc.CallOption) (ProjectService_ListProjectsClient, error) {
+func (c *projectServiceClient) ListProjects(ctx context.Context, in *ListProjectsRequest, opts ...grpc.CallOption) (ProjectService_ListProjectsClient, error) {
 	stream, err := c.cc.NewStream(ctx, &ProjectService_ServiceDesc.Streams[0], ProjectService_ListProjects_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (c *projectServiceClient) ListProjects(ctx context.Context, in *DummyProjec
 }
 
 type ProjectService_ListProjectsClient interface {
-	Recv() (*DummyProjectResponse, error)
+	Recv() (*ProjectResponse, error)
 	grpc.ClientStream
 }
 
@@ -63,16 +63,16 @@ type projectServiceListProjectsClient struct {
 	grpc.ClientStream
 }
 
-func (x *projectServiceListProjectsClient) Recv() (*DummyProjectResponse, error) {
-	m := new(DummyProjectResponse)
+func (x *projectServiceListProjectsClient) Recv() (*ProjectResponse, error) {
+	m := new(ProjectResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *projectServiceClient) CreateProject(ctx context.Context, in *DummyProjectRequest, opts ...grpc.CallOption) (*DummyProjectResponse, error) {
-	out := new(DummyProjectResponse)
+func (c *projectServiceClient) CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...grpc.CallOption) (*ProjectResponse, error) {
+	out := new(ProjectResponse)
 	err := c.cc.Invoke(ctx, ProjectService_CreateProject_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *projectServiceClient) CreateProject(ctx context.Context, in *DummyProje
 // All implementations must embed UnimplementedProjectServiceServer
 // for forward compatibility
 type ProjectServiceServer interface {
-	ListProjects(*DummyProjectRequest, ProjectService_ListProjectsServer) error
-	CreateProject(context.Context, *DummyProjectRequest) (*DummyProjectResponse, error)
+	ListProjects(*ListProjectsRequest, ProjectService_ListProjectsServer) error
+	CreateProject(context.Context, *CreateProjectRequest) (*ProjectResponse, error)
 	mustEmbedUnimplementedProjectServiceServer()
 }
 
@@ -93,10 +93,10 @@ type ProjectServiceServer interface {
 type UnimplementedProjectServiceServer struct {
 }
 
-func (UnimplementedProjectServiceServer) ListProjects(*DummyProjectRequest, ProjectService_ListProjectsServer) error {
+func (UnimplementedProjectServiceServer) ListProjects(*ListProjectsRequest, ProjectService_ListProjectsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListProjects not implemented")
 }
-func (UnimplementedProjectServiceServer) CreateProject(context.Context, *DummyProjectRequest) (*DummyProjectResponse, error) {
+func (UnimplementedProjectServiceServer) CreateProject(context.Context, *CreateProjectRequest) (*ProjectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProject not implemented")
 }
 func (UnimplementedProjectServiceServer) mustEmbedUnimplementedProjectServiceServer() {}
@@ -113,7 +113,7 @@ func RegisterProjectServiceServer(s grpc.ServiceRegistrar, srv ProjectServiceSer
 }
 
 func _ProjectService_ListProjects_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(DummyProjectRequest)
+	m := new(ListProjectsRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func _ProjectService_ListProjects_Handler(srv interface{}, stream grpc.ServerStr
 }
 
 type ProjectService_ListProjectsServer interface {
-	Send(*DummyProjectResponse) error
+	Send(*ProjectResponse) error
 	grpc.ServerStream
 }
 
@@ -129,12 +129,12 @@ type projectServiceListProjectsServer struct {
 	grpc.ServerStream
 }
 
-func (x *projectServiceListProjectsServer) Send(m *DummyProjectResponse) error {
+func (x *projectServiceListProjectsServer) Send(m *ProjectResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
 func _ProjectService_CreateProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DummyProjectRequest)
+	in := new(CreateProjectRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func _ProjectService_CreateProject_Handler(srv interface{}, ctx context.Context,
 		FullMethod: ProjectService_CreateProject_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProjectServiceServer).CreateProject(ctx, req.(*DummyProjectRequest))
+		return srv.(ProjectServiceServer).CreateProject(ctx, req.(*CreateProjectRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
