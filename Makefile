@@ -13,10 +13,13 @@ BUILD_LDFLAGS = -X $(PKG).commit=$(COMMIT) -X $(PKG).date=$(DATE)
 
 default: test
 
-ci: test
+ci: test testclient
 
 test:
 	go test ./... -coverprofile=coverage.out -covermode=count
+
+testclient:
+	cd example/ && go test ./...
 
 lint:
 	golangci-lint run ./...

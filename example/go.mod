@@ -3,14 +3,20 @@ module github.com/pepabo/protoc-gen-go-client/example
 go 1.20
 
 require (
+	github.com/k1LoW/grpcstub v0.8.1
 	google.golang.org/grpc v1.53.0
+	google.golang.org/grpc/examples v0.0.0-20230321232853-a02aae6168aa
 	google.golang.org/protobuf v1.30.0
 )
 
 require (
+	github.com/bmatcuk/doublestar/v4 v4.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
-	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
+	github.com/jaswdr/faker v1.16.0 // indirect
+	github.com/jhump/protoreflect v1.12.0 // indirect
+	github.com/minio/pkg v1.6.4 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
+	google.golang.org/genproto v0.0.0-20230303212802-e74f57abe488 // indirect
 )
