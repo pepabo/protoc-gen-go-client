@@ -18,6 +18,9 @@ func TestClient(t *testing.T) {
 	})
 	ts.ResponseDynamic()
 	client := myapp.New(ts.Conn())
+	t.Cleanup(func() {
+		client.Close()
+	})
 	if _, err := client.UserService().CreateUser(ctx, &myapp.CreateUserRequest{
 		Name:  "alice",
 		Email: "alice@example.com",

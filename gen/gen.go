@@ -15,11 +15,13 @@ import (
 const (
 	optPackage     = "package"
 	optSamePackage = "same_package"
+	optWithClose   = "with_close"
 )
 
 type Generator struct {
 	genp        *protogen.Plugin
 	samePackage bool
+	withClose   bool
 	packageName string
 }
 
@@ -56,13 +58,27 @@ func (gen *Generator) Generate() error {
 	}
 	g.P("")
 	g.P(`import (`)
+	if gen.withClose {
+		g.P(`"context"`)
+		g.P("")
+	}
 	if !gen.samePackage {
 		g.P(fmt.Sprintf("%s %s", tmppf.GoPackageName, tmppf.GoImportPath.String()))
 	}
 	g.P(`"google.golang.org/grpc"`)
 	g.P(`)`)
 
-	// type ClientInterface interface
+	if gen.withClose {
+		// type ClientConn interface
+		g.P(`type ClientConnInterface interface {`)
+		g.P(`Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error`)
+		g.P(`NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error)`)
+		g.P("Close() error")
+		g.P(`}`)
+		g.P("")
+	}
+
+	// type Client interface
 	g.P(`type Client interface {`)
 	for _, pf := range gen.genp.Files {
 		if !pf.Generate {
@@ -75,6 +91,9 @@ func (gen *Generator) Generate() error {
 				g.P(fmt.Sprintf("%s() %s.%sClient", s.Desc.FullName().Name(), tmppf.GoPackageName, s.Desc.FullName().Name()))
 			}
 		}
+	}
+	if gen.withClose {
+		g.P("Close() error")
 	}
 	g.P(`}`)
 	g.P("")
@@ -93,11 +112,18 @@ func (gen *Generator) Generate() error {
 			}
 		}
 	}
+	if gen.withClose {
+		g.P("cc ClientConnInterface")
+	}
 	g.P(`}`)
 	g.P("")
 
-	// func New(cc grpc.ClientConnInterface) *Client
-	g.P(`func New(cc grpc.ClientConnInterface) Client {`)
+	// func New(cc *.ClientConnInterface) *Client
+	if gen.withClose {
+		g.P(`func New(cc ClientConnInterface) Client {`)
+	} else {
+		g.P(`func New(cc grpc.ClientConnInterface) Client {`)
+	}
 	g.P(`return &client{`)
 	for _, pf := range gen.genp.Files {
 		if !pf.Generate {
@@ -110,6 +136,9 @@ func (gen *Generator) Generate() error {
 				g.P(fmt.Sprintf("%s: %s.New%sClient(cc),", toLowerCamel(string(s.Desc.FullName().Name())), tmppf.GoPackageName, s.Desc.FullName().Name()))
 			}
 		}
+	}
+	if gen.withClose {
+		g.P("cc: cc,")
 	}
 	g.P(`}`)
 	g.P(`}`)
@@ -131,6 +160,12 @@ func (gen *Generator) Generate() error {
 			g.P("")
 		}
 	}
+	if gen.withClose {
+		g.P("func (c *client) Close() error {")
+		g.P("return c.cc.Close()")
+		g.P("}")
+		g.P("")
+	}
 	return nil
 }
 
@@ -141,6 +176,8 @@ func (gen *Generator) parseOpts() error {
 		switch {
 		case o == optSamePackage:
 			gen.samePackage = true
+		case o == optWithClose:
+			gen.withClose = true
 		case strings.HasPrefix(o, fmt.Sprintf("%s=", optPackage)):
 			gen.packageName = strings.TrimPrefix(o, fmt.Sprintf("%s=", optPackage))
 		}

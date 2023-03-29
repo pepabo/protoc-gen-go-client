@@ -5,23 +5,34 @@
 package myapp
 
 import (
+	"context"
+
 	"google.golang.org/grpc"
 )
+
+type ClientConnInterface interface {
+	Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error
+	NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error)
+	Close() error
+}
 
 type Client interface {
 	ProjectService() ProjectServiceClient
 	UserService() UserServiceClient
+	Close() error
 }
 
 type client struct {
 	projectService ProjectServiceClient
 	userService    UserServiceClient
+	cc             ClientConnInterface
 }
 
-func New(cc grpc.ClientConnInterface) Client {
+func New(cc ClientConnInterface) Client {
 	return &client{
 		projectService: NewProjectServiceClient(cc),
 		userService:    NewUserServiceClient(cc),
+		cc:             cc,
 	}
 }
 
@@ -31,4 +42,8 @@ func (c *client) ProjectService() ProjectServiceClient {
 
 func (c *client) UserService() UserServiceClient {
 	return c.userService
+}
+
+func (c *client) Close() error {
+	return c.cc.Close()
 }
